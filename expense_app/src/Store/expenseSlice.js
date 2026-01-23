@@ -29,21 +29,30 @@ const expenseSlice = createSlice({
       state.expenses = state.expenses.filter(exp => exp.id !== action.payload);
     },
     setBudget(state, action) {
-      state.totalBudget = action.payload;
+      state.totalBudget = Number(action.payload);
     },
   },
 });
 
 
-const selectExpenses= (state) => state.expenses;
 
+const selectBudgetState = (state) => state.expenses;
+
+// 2. Get the Budget
+export const selectTotalBudget = (state) => selectBudgetState(state).totalBudget;
+
+// 3. Get the List
+export const selectExpenses = (state) => selectBudgetState(state).expenses;
+
+// 4. Calculate Spent
 export const selectTotalSpent = (state) => 
-  selectExpenses(state).expenses.reduce((total, item) => total + item.amount, 0);
+  selectExpenses(state).reduce((total, item) => total + item.amount, 0);
 
+// 5. Calculate Remaining
 export const selectRemainingBudget = (state) => {
-  const totalSpent = selectTotalSpent(state);
-  return selectExpenses(state).totalBudget - totalSpent;
+  return selectTotalBudget(state) - selectTotalSpent(state);
 };
+
 
 export const { addExpense, removeExpense, setBudget } = expenseSlice.actions;
 export default expenseSlice.reducer;
